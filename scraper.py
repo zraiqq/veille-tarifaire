@@ -1,36 +1,37 @@
 import requests
 from bs4 import BeautifulSoup
+from rapidfuzz import process, fuzz
 
-def get_price_from_agrizone(ref):
-    url = f"https://www.agrizone.net/search?q={ref}"
+def get_products_from_agrizone():
+    url = "https://www.agrizone.net/pieces-d-usure/"
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
-    
-    price = soup.select_one(".price")  # À adapter selon la structure réelle du site
-    return price.text.strip() if price else "Prix non trouvé"
+    products = []
+    for item in soup.select(".product-item"):  # Ajuste selon le site
+        name = item.select_one(".product-title").text.strip()
+        price = item.select_one(".price").text.strip()
+        link = item.select_one("a")['href']
+        products.append({"name": name, "price": price, "link": link})
+    return products
 
-def get_price_from_prodealcenter(ref):
-    url = f"https://www.prodealcenter.fr/catalogsearch/result/?q={ref}"
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, "html.parser")
-    
-    price = soup.select_one(".price")  # À adapter selon la structure réelle du site
-    return price.text.strip() if price else "Prix non trouvé"
+def search_best_match(products, query):
+    names = [p["name"] for p in products]
+    best_match = process.extractOne(query, names, scorer=fuzz.token_sort_ratio)
+    if best_match:
+        match_name = best_match[0]
+        for product in products:
+            if product["name"] == match_name:
+                return product
+    return None
 
-def get_price_from_agrifournitures(ref):
-    url = f"https://www.agrifournitures.fr/catalogsearch/result/?q={ref}"
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, "html.parser")
-    
-    price = soup.select_one(".price")  # À adapter selon la structure réelle du site
-    return price.text.strip() if price else "Prix non trouvé"
+def get_price_comparison(query):
+    agrizone_products = get_products_from_agrizone()
+    best_match = search_best_match(agrizone_products, query)
+    if best_match:
+        return best_match
+    return {"error": "Produit non trouvé"}
 
-def get_prices(references):
-    results = []
-    for ref in references:
-        agrizone_price = get_price_from_agrizone(ref)
-        prodeal_price = get_price_from_prodealcenter(ref)
-        agrifournitures_price = get_price_from_agrifournitures(ref)
-        results.append([ref, agrizone_price, prodeal_price, agrifournitures_price])
-    
-    return results
+if __name__ == "__main__":
+    query = input("Entrez un mot-clé produit : ")
+    result = get_price_comparison(query)
+    print(result)
