@@ -1,3 +1,4 @@
+print("Le script a bien démarré !")
 import requests
 from bs4 import BeautifulSoup
 from rapidfuzz import process, fuzz
