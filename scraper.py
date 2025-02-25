@@ -1,4 +1,21 @@
-print("Le script a bien démarré !")
+print("Le script commence...")
+
+import requests
+from bs4 import BeautifulSoup
+
+print("Modules importés avec succès")
+
+url = "https://httpbin.org/html"  # URL test simple
+response = requests.get(url)
+
+print(f"Requête envoyée, statut HTTP : {response.status_code}")
+
+if response.status_code == 200:
+    soup = BeautifulSoup(response.text, "html.parser")
+    print("HTML extrait avec succès")
+    print(soup.prettify()[:500])  # Afficher les 500 premiers caractères du HTML
+else:
+    print("Échec de la requête")
 import requests
 from bs4 import BeautifulSoup
 from rapidfuzz import process, fuzz
