@@ -1,3 +1,7 @@
+import os
+print("PID du script :", os.getpid())
+print("Dossier courant :", os.getcwd())
+print("Fichiers présents :", os.listdir("."))
 import sys
 print("Python version:", sys.version)
 print("Script en cours d'exécution...")
