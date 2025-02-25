@@ -1,21 +1,15 @@
-print("Le script commence...")
+import sys
+print("Python version:", sys.version)
+print("Script en cours d'exécution...")
+sys.stdout.flush()  # Force l'affichage immédiat
 
-import requests
-from bs4 import BeautifulSoup
+import time
+for i in range(5):
+    print(f"Étape {i+1}...")
+    sys.stdout.flush()
+    time.sleep(1)
 
-print("Modules importés avec succès")
-
-url = "https://httpbin.org/html"  # URL test simple
-response = requests.get(url)
-
-print(f"Requête envoyée, statut HTTP : {response.status_code}")
-
-if response.status_code == 200:
-    soup = BeautifulSoup(response.text, "html.parser")
-    print("HTML extrait avec succès")
-    print(soup.prettify()[:500])  # Afficher les 500 premiers caractères du HTML
-else:
-    print("Échec de la requête")
+print("Fin du script.")
 import requests
 from bs4 import BeautifulSoup
 from rapidfuzz import process, fuzz
